@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "588014497568",
+    "firebase_url": "https://babyrockingbed.firebaseio.com",
+    "project_id": "babyrockingbed",
+    "storage_bucket": "babyrockingbed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:588014497568:android:25fe609bf03c5f3b",
+        "android_client_info": {
+          "package_name": "com.example.khanj.babyrockingbed"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "588014497568-aprfcdkpou32f5ar3daeogu1i0l52sed.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "588014497568-aprfcdkpou32f5ar3daeogu1i0l52sed.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2CH7ef1nkmEyVilLAHUezVim2APXCNTk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

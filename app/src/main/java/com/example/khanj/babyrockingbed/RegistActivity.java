@@ -55,6 +55,7 @@ public class RegistActivity extends BaseActivity {
     DatabaseReference mchild1Ref;
     DatabaseReference mchild2Ref;
     DatabaseReference mchild3Ref;
+    DatabaseReference mchild4Ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,7 +220,9 @@ public class RegistActivity extends BaseActivity {
                             mchild1Ref.setValue(etEmail.getText().toString());
                             mchild2Ref.setValue(etPassword.getText().toString());
                             mchild3Ref = mchildRef.child("아기상태");
+                            mchild4Ref = mchildRef.child("흔들침대");
                             mchild3Ref.setValue("0");
+                            mchild4Ref.setValue("0");
 
                             signOut();
                             finish();

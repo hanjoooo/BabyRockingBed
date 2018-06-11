@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+    <menu tools:context="kr.re.Dev.Bluetooth.MainActivity" xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/action_connect"  android:orderInCategory="100" android:id="@+id/action_connect"/>
+
+    <item android:title="@string/action_arduinocode" android:orderInCategory="100" android:id="@+id/action_code"/>
+
+</menu>

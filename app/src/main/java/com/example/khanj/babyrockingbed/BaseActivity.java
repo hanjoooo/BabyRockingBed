@@ -4,13 +4,14 @@ import android.app.ProgressDialog;
 import android.app.ProgressDialog;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AppCompatActivity;
-/**
+/*
  * Created by kimhanjoo on 17. 1. 20.
  */
 
 public class BaseActivity extends AppCompatActivity {
     @VisibleForTesting
     public ProgressDialog mProgressDialog;
+
 
     public void showProgressDialog() {
         if (mProgressDialog == null) {

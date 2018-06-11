@@ -39,4 +39,24 @@
     <string name="success">Success</string>
 
 
+    <string name="send">Send</string>
+    <string name="not_connected">You are not connected to a device</string>
+    <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
+    <string name="title_connecting">connecting...</string>
+    <string name="title_connected_to">connected: </string>
+    <string name="title_not_connected">not connected</string>
+
+
+
+    <!-- Options Menu -->
+    <string name="connect">Connect a device</string>
+    <string name="discoverable">Make discoverable</string>
+    <string name="action_connect">Connect</string>
+
+    <string name="action_arduinocode">Show Arduino code</string>
+
+    <string name="action_disconnect">Disconnect</string>
+
+    <string name="action_settings" />
+
 </resources>

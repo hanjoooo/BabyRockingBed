@@ -1,22 +1,16 @@
 package com.example.khanj.babyrockingbed;
 
-import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGattService;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -24,18 +18,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,72 +28,25 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class MainActivity extends BaseActivity {
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
-    DatabaseReference mConditionRef = mRootRef.child("users");
-    DatabaseReference mchildRef;
-    DatabaseReference mchild1Ref;
-    DatabaseReference mchild2Ref;
-    Button bton;
-    int btonoff = 0;
-    int babystate = 0;
-    ImageView baby;
-    TextView txstate;
-    String btBabyState = "0";
-    Timer timer;
-    TimerTask adTast;
-
+public class BLTActivity extends AppCompatActivity {
     private LinkedList<BluetoothDevice> mBluetoothDevices = new LinkedList<BluetoothDevice>();
     private ArrayAdapter<String> mDeviceArrayAdapter;
-    public ProgressDialog mProgressDialog;
+
+    private EditText mEditTextInput;
+    private TextView mTextView;
+    private Button mButtonSend;
     private ProgressDialog mLoadingDialog;
-    private android.app.AlertDialog mDeviceListDialog;
+    private AlertDialog mDeviceListDialog;
+    private Menu mMenu;
     private BluetoothSerialClient mClient;
 
-    private Menu mMenu;
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        MenuInflater inflater =getMenuInflater();
-        mMenu = menu;
-        inflater.inflate(R.menu.meue_sample,menu);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
-            case R.id.action_logout:
-                signOut();
-                return true;
-            case R.id.action_bt:
-                Intent intent = new Intent(getApplicationContext(),BLTActivity.class);
-                startActivity(intent);
-            case R.id.action_connect:
-                boolean connect = mClient.isConnection();
-                    if (!connect) {
-                        mDeviceListDialog.show();
-                    } else {
-                        mBTHandler.close();
-                    }
-                    return true;
-            default:
-                return  super.onOptionsItemSelected(item);
-        }
-    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_blt);
         mClient = BluetoothSerialClient.getInstance();
-
-        mAuth = FirebaseAuth.getInstance();
-        bton = (Button)findViewById(R.id.btOn);
-        baby = (ImageView)findViewById(R.id.imageView);
-        txstate = (TextView)findViewById(R.id.txstate);
 
         if(mClient == null) {
             Toast.makeText(getApplicationContext(), "Cannot use the Bluetooth device.", Toast.LENGTH_SHORT).show();
@@ -117,13 +55,8 @@ public class MainActivity extends BaseActivity {
         overflowMenuInActionBar();
         initProgressDialog();
         initDeviceListDialog();
-        bton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mchild2Ref.setValue("0");
-                sendStringData("22");
-            }
-        });
+        initWidget();
+
     }
 
     private void overflowMenuInActionBar(){
@@ -160,7 +93,19 @@ public class MainActivity extends BaseActivity {
         mLoadingDialog.setCancelable(false);
     }
 
-
+    private void initWidget() {
+        mTextView = (TextView) findViewById(R.id.textViewTerminal);
+        mTextView.setMovementMethod(new ScrollingMovementMethod());
+        mEditTextInput = (EditText) findViewById(R.id.editTextInput);
+        mButtonSend = (Button) findViewById(R.id.buttonSend);
+        mButtonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendStringData(mEditTextInput.getText().toString());
+                mEditTextInput.setText("");
+            }
+        });
+    }
 
     private void initDeviceListDialog() {
         mDeviceArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.item_device);
@@ -178,7 +123,7 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select bluetooth device");
         builder.setView(listView);
         builder.setPositiveButton("Scan",
@@ -218,6 +163,15 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    private void addText(String text) {
+        mTextView.append(text);
+        final int scrollAmount = mTextView.getLayout().getLineTop(mTextView.getLineCount()) - mTextView.getHeight();
+        if (scrollAmount > 0)
+            mTextView.scrollTo(0, scrollAmount);
+        else
+            mTextView.scrollTo(0, 0);
     }
 
 
@@ -283,15 +237,15 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onError(Exception e) {
             mLoadingDialog.cancel();
-            Log.d("TAG","Messgae : Connection error - " +  e.toString() + "\n");
-            mMenu.getItem(1).setTitle(R.string.action_connect);
+            addText("Messgae : Connection error - " +  e.toString() + "\n");
+            mMenu.getItem(0).setTitle(R.string.action_connect);
         }
 
         @Override
         public void onDisconnected() {
-            mMenu.getItem(1).setTitle(R.string.action_connect);
+            mMenu.getItem(0).setTitle(R.string.action_connect);
             mLoadingDialog.cancel();
-            Log.d("TAG","Messgae : Disconnected.\n");
+            addText("Messgae : Disconnected.\n");
         }
         @Override
         public void onData(byte[] buffer, int length) {
@@ -302,23 +256,15 @@ public class MainActivity extends BaseActivity {
                 mmByteBuffer = newBuffer;
             }
             mmByteBuffer.put(buffer, 0, length);
-            Log.d("Tag",new String(mmByteBuffer.array(),0,mmByteBuffer.position()));
-            btBabyState = new String(mmByteBuffer.array(),0,mmByteBuffer.position());
-            if(btBabyState.contains("1")){
-                mchild1Ref.setValue("1");
-            }
-            else{
-                mchild1Ref.setValue("0");
-            }
-
+            addText(new String(mmByteBuffer.array(),0,mmByteBuffer.position()));
             mmByteBuffer.clear();
         }
 
         @Override
         public void onConnected() {
-            Log.d("TAG","Messgae : Connected. " + mClient.getConnectedDevice().getName() + "\n");
+            addText("Messgae : Connected. " + mClient.getConnectedDevice().getName() + "\n");
             mLoadingDialog.cancel();
-            mMenu.getItem(1).setTitle(R.string.action_disconnect);
+            mMenu.getItem(0).setTitle(R.string.action_disconnect);
         }
     };
 
@@ -326,7 +272,7 @@ public class MainActivity extends BaseActivity {
         data += '\0';
         byte[] buffer = data.getBytes();
         if(mBTHandler.write(buffer)) {
-            ;
+            addText("Me : " + data + '\n');
         }
     }
 
@@ -335,74 +281,59 @@ public class MainActivity extends BaseActivity {
         mClient.claer();
     };
 
+
     @Override
-    public void onStart() {
-        super.onStart();
-        sendStringData("1");
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        mchildRef = mConditionRef.child(currentUser.getUid());
-        mchild1Ref = mchildRef.child("아기상태");
-        mchild2Ref = mchildRef.child("흔들침대");
-        mchild1Ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String txt = dataSnapshot.getValue(String.class);
-                if(txt.equals("1")){
-                    btonoff=1;
-                    baby.setImageResource(R.drawable.crying);
-                    babystate =1;
-                    txstate.setText("흔들침대 동작중...");
-                    mchild2Ref.setValue("1");
-                }
-                else if(txt.equals("0"))
-                {
-                    babystate =0;
-                    baby.setImageResource(R.drawable.smile);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.btmenu, menu);
+        mMenu = menu;
+        return true;
+    }
 
-                    txstate.setText("아기가 평온히 잠들어 있어요");                    }
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        boolean connect = mClient.isConnection();
+        if(item.getItemId() == R.id.action_connect) {
+            if (!connect) {
+                mDeviceListDialog.show();
+            } else {
+                mBTHandler.close();
             }
+            return true;
+        } else {
+            showCodeDlg();
+            return true;
+        }
+    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        mchild2Ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String txt = dataSnapshot.getValue(String.class);
-                if(txt.equals("1")){
-                    btonoff =1;
-                    txstate.setText("흔들침대 동작중...");
-                    bton.setText("흔들침대 동작끄기");
-                }
-                else{
-                    btonoff=0;
-                    if(babystate == 1){
-                        txstate.setText("아이가 울고있어요ㅠㅠ");
+    private void showCodeDlg() {
+        TextView codeView = new TextView(this);
+        codeView.setText(Html.fromHtml(readCode()));
+        codeView.setMovementMethod(new ScrollingMovementMethod());
+        codeView.setBackgroundColor(Color.parseColor("#202020"));
+        new AlertDialog.Builder(this, android.R.style.Theme_Holo_Light_DialogWhenLarge)
+                .setView(codeView)
+                .setPositiveButton("OK", new AlertDialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
                     }
-                    else{
-                        txstate.setText("아기가 평온히 잠들어 있어요");                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-    private void signOut() {
-        showProgressDialog();
-        mAuth.signOut();
-        hideProgressDialog();
-        finish();
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        startActivity(intent);
+                }).show();
     }
 
-
+    private String readCode() {
+        try {
+            InputStream is = getAssets().open("HC_06_Echo.txt");
+            int length = is.available();
+            byte[] buffer = new byte[length];
+            is.read(buffer);
+            is.close();
+            String code = new String(buffer);
+            buffer = null;
+            return code;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
 }

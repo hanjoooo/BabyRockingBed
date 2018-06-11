@@ -223,7 +223,8 @@ public class RegistActivity extends BaseActivity {
                             mchild4Ref = mchildRef.child("흔들침대");
                             mchild3Ref.setValue("0");
                             mchild4Ref.setValue("0");
-
+                            mchild4Ref = mchildRef.child("울음시각");
+                            mchild4Ref.setValue(" ");
                             signOut();
                             finish();
                         }

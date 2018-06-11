@@ -157,6 +157,7 @@ public class LoginActivity extends BaseActivity {
                     mchild1Ref.setValue("0");
                     mchild1Ref = mchildRef.child("흔들침대");
                     mchild1Ref.setValue("0");
+                    mchild1Ref = mchildRef.child("울음시각");
                     finish();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);

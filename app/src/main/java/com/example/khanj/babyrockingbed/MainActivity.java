@@ -41,7 +41,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -54,11 +57,13 @@ public class MainActivity extends BaseActivity {
     DatabaseReference mchildRef;
     DatabaseReference mchild1Ref;
     DatabaseReference mchild2Ref;
+    DatabaseReference mchild3Ref;
     Button bton;
     int btonoff = 0;
     int babystate = 0;
     ImageView baby;
     TextView txstate;
+    TextView txtime;
     String btBabyState = "0";
     Timer timer;
     TimerTask adTast;
@@ -109,6 +114,7 @@ public class MainActivity extends BaseActivity {
         bton = (Button)findViewById(R.id.btOn);
         baby = (ImageView)findViewById(R.id.imageView);
         txstate = (TextView)findViewById(R.id.txstate);
+        txtime =(TextView)findViewById(R.id.txtime);
 
         if(mClient == null) {
             Toast.makeText(getApplicationContext(), "Cannot use the Bluetooth device.", Toast.LENGTH_SHORT).show();
@@ -306,6 +312,7 @@ public class MainActivity extends BaseActivity {
             btBabyState = new String(mmByteBuffer.array(),0,mmByteBuffer.position());
             if(btBabyState.contains("1")){
                 mchild1Ref.setValue("1");
+
             }
             else{
                 mchild1Ref.setValue("0");
@@ -344,6 +351,7 @@ public class MainActivity extends BaseActivity {
         mchildRef = mConditionRef.child(currentUser.getUid());
         mchild1Ref = mchildRef.child("아기상태");
         mchild2Ref = mchildRef.child("흔들침대");
+        mchild3Ref = mchildRef.child("울음시각");
         mchild1Ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -354,6 +362,14 @@ public class MainActivity extends BaseActivity {
                     babystate =1;
                     txstate.setText("흔들침대 동작중...");
                     mchild2Ref.setValue("1");
+
+                    SimpleDateFormat formatter = new SimpleDateFormat ( "MMddHHmmss", Locale.KOREAN );
+                    SimpleDateFormat formatter1 = new SimpleDateFormat ( "HH시mm분", Locale.KOREAN );
+                    Date currentTime = new Date ( );
+                    String dTime = formatter.format ( currentTime );
+                    String sTime = formatter1.format(currentTime);
+                    txtime.setText("아이가 최근에 운 시각 : "+ dTime);
+                    mchild3Ref.child(dTime).setValue(sTime);
                 }
                 else if(txt.equals("0"))
                 {

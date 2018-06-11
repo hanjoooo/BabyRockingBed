@@ -364,11 +364,13 @@ public class MainActivity extends BaseActivity {
                     mchild2Ref.setValue("1");
 
                     SimpleDateFormat formatter = new SimpleDateFormat ( "MMddHHmmss", Locale.KOREAN );
+                    SimpleDateFormat formatter2 = new SimpleDateFormat ( "MM월 dd일 HH시 mm분 ss초", Locale.KOREAN );
                     SimpleDateFormat formatter1 = new SimpleDateFormat ( "HH시mm분", Locale.KOREAN );
                     Date currentTime = new Date ( );
                     String dTime = formatter.format ( currentTime );
                     String sTime = formatter1.format(currentTime);
-                    txtime.setText("아이가 최근에 운 시각 : "+ dTime);
+                    String nowTime = formatter2.format(currentTime);
+                    txtime.setText("아이가 최근에 운 시각 : "+ nowTime);
                     mchild3Ref.child(dTime).setValue(sTime);
                 }
                 else if(txt.equals("0"))
